@@ -1,9 +1,8 @@
 import csv
-from models.listing import Listing
 
-def save_to_csv(listings: list[Listing], path="listings.csv"):
+def save_to_csv(links, path="links.csv"):
     with open(path, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Title", "Price"])
-        for listing in listings:
-            writer.writerow([listing.title, listing.price])
+        writer.writerow(["Link"])
+        for link in links:
+            writer.writerow([link])
