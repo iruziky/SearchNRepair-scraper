@@ -48,13 +48,17 @@ Plataforma full-stack que realiza **web scraping automatizado**, armazena os dad
 
 ```plaintext
 scraper-olx/
-├── README.md                # Documentação do projeto
-├── .gitignore               # Arquivos e pastas ignorados pelo Git
-├── requirements.txt         # Dependências Python
-├── .env                     # Variáveis de ambiente (como USER_AGENT, URL etc.)
-├── src/                     # Código-fonte principal do scraper
-│   ├── __init__.py
-│   ├── scraper.py           # Script de scraping com Playwright
-│   └── config.py            # Configurações de ambiente, URLs, etc.
-├── tests/                   # Testes com pytest
-│   └── test_scraper.py      # Testes unitários do scraper
+├── README.md                # Project documentation
+├── .gitignore               # Files and folders ignored by Git
+├── requirements.txt         # Python dependencies
+├── .env                     # Environment variables (e.g., USER_AGENT, URL)
+├── src/                     # Main source code
+│   ├── main.py              # Entry point
+│   ├── config.py            # Centralized configuration
+│   ├── scrapers/            # One scraper per site
+│   ├── parsers/             # Functions to extract and clean data from HTML
+│   ├── storage/             # Persistence layer: save to CSV, JSON, DB, etc.
+│   ├── utils/               # Helper functions: user-agent, delays, proxies
+│   ├── models/              # Data structure representation (POPOs or dataclasses)
+├── tests/                   # Tests using pytest
+│   └── test_scraper.py      # Unit tests for the scraper
