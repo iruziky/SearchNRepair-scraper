@@ -11,7 +11,6 @@ def get_page(p):
 
 def next_page(page, index):
     page.goto(BASE_URL + "?o=" + str(index))
-    return
 
 def is_last_page(page):
     text = page.inner_text("body")
