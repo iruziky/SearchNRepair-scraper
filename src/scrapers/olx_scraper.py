@@ -10,9 +10,8 @@ def get_page(p):
     return browser, page
 
 def next_page(page, index):
-    index = index + 1
     page.goto(BASE_URL + "?o=" + str(index))
-    return page, index
+    return
 
 def is_last_page(page):
     text = page.inner_text("body")

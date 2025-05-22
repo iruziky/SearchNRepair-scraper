@@ -11,7 +11,8 @@ def main():
         while(not is_last_page(page)):
             links = extract_links(page)
             save_to_csv(links)
-            page, index = next_page(page, index)
+            next_page(page, index)
+            index = index + 1
 
         browser.close()
 
