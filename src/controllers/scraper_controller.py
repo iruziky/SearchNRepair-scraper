@@ -13,21 +13,17 @@ def product_links_scraper(driver):
 
     while True:
         try:
-            # Extrai links da página atual
             links = extract_links(driver)
             save_to_csv(links)
             print(f"Página {index} com {len(links)} links")
 
-            # Verifica se é a última página antes de tentar ir para próxima
             if is_last_page(driver):
                 print("Última página alcançada.")
                 break
 
-            # Vai para próxima página
             index += 1
             next_page(driver, index)
 
-            # Pequena pausa para evitar detecção
             time.sleep(2)
 
         except Exception as e:
@@ -43,14 +39,12 @@ def products_scraper(driver):
         print("Nenhum link encontrado para scraping.")
         return
 
-    for i, link in enumerate(links[:5], 1):  # exemplo: raspa só 5 primeiros
+    for i, link in enumerate(links[:5], 1):
         try:
             print(f"\nProcessando produto {i}/{min(5, len(links))}...")
             
-            # Navega para a página do produto
             driver.get(link)
             
-            # Espera explícita pelo elemento da descrição
             try:
                 desc_element = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "div.sc-ifAKCX.kZqjtz"))

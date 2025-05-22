@@ -2,9 +2,8 @@ import undetected_chromedriver as uc
 from controllers.scraper_controller import product_links_scraper, products_scraper
 
 def main():
-    # Configuração do driver
     options = uc.ChromeOptions()
-    options.headless = False  # Ou True se quiser headless
+    options.headless = False
     
     driver = uc.Chrome(options=options)
     

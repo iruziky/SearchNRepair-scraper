@@ -21,7 +21,7 @@ def get_page(driver):
 def next_page(driver, index):
     """Navega para a próxima página de resultados"""
     driver.get(f"{BASE_URL}?o={index}")
-    time.sleep(2)  # Espera para carregamento
+    time.sleep(2)
 
 def is_last_page(driver):
     """Verifica se é a última página de resultados"""
