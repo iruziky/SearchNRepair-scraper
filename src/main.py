@@ -1,11 +1,16 @@
-from scrapers.olx_scraper import get_page_content
-from parsers.olx_parser import parse_listings
-from storage.csv_writer import save_to_csv
+from playwright.sync_api import sync_playwright
+from scrapers.olx_scraper import get_page
+from parsers.olx_parser import extract_links
 
 def main():
-    html = get_page_content()
-    listings = parse_listings(html)
-    save_to_csv(listings)
+    with sync_playwright() as p:
+        browser, page = get_page(p)
+        links = extract_links(page)
+
+        for link in links:
+            print(link)
+            
+        browser.close()
 
 if __name__ == "__main__":
     main()
