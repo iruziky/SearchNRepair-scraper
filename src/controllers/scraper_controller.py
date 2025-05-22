@@ -1,5 +1,6 @@
 from scrapers.olx_scraper import get_page, next_page, is_last_page
-from parsers.olx_parser import extract_links
+from parsers.olx_parser import extract_links 
+from storage.csv_writer import save_to_csv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -8,14 +9,13 @@ import time
 def product_links_scraper(driver):
     """Coleta todos os links de produtos das páginas de listagem"""
     driver = get_page(driver)
-    index = 1
-    all_links = []
+    index = 100
 
     while True:
         try:
             # Extrai links da página atual
             links = extract_links(driver)
-            all_links.extend(links)
+            save_to_csv(links)
             print(f"Página {index} com {len(links)} links")
 
             # Verifica se é a última página antes de tentar ir para próxima
@@ -34,11 +34,10 @@ def product_links_scraper(driver):
             print(f"Erro durante scraping de links: {e}")
             break
 
-    return all_links
-
 def products_scraper(driver):
     """Raspa os detalhes dos produtos individuais"""
-    links = product_links_scraper(driver)
+    links = open("links.csv").read()
+    links = links.split("\n")
     
     if not links:
         print("Nenhum link encontrado para scraping.")
