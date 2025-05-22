@@ -7,3 +7,6 @@ STATE_ABBREVIATION = "rn"
 CITY = "natal"
 
 BASE_URL = f"https://www.olx.com.br/celulares/estado-{STATE_ABBREVIATION}/{STATE}/{CITY}/q=smartphone&sf=1"
+
+# Configurações adicionais para Selenium
+WAIT_TIMEOUT = 30  # Tempo de espera em segundos
