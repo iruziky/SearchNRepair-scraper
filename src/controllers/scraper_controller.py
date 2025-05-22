@@ -7,18 +7,18 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 def product_links_scraper(driver):
-    """Coleta todos os links de produtos das páginas de listagem"""
+    """Collect all product links from listing pages"""
     driver = get_page(driver)
-    index = 100
+    index = 1
 
     while True:
         try:
             links = extract_links(driver)
             save_to_csv(links)
-            print(f"Página {index} com {len(links)} links")
+            print(f"Page {index} with {len(links)} links")
 
             if is_last_page(driver):
-                print("Última página alcançada.")
+                print("Last page reached.")
                 break
 
             index += 1
@@ -27,21 +27,21 @@ def product_links_scraper(driver):
             time.sleep(2)
 
         except Exception as e:
-            print(f"Erro durante scraping de links: {e}")
+            print(f"Error during links scraping: {e}")
             break
 
 def products_scraper(driver):
-    """Raspa os detalhes dos produtos individuais"""
+    """Scrape details of individual products"""
     links = open("links.csv").read()
     links = links.split("\n")
     
     if not links:
-        print("Nenhum link encontrado para scraping.")
+        print("No links found for scraping.")
         return
 
     for i, link in enumerate(links[:5], 1):
         try:
-            print(f"\nProcessando produto {i}/{min(5, len(links))}...")
+            print(f"\nProcessing product {i}/{min(5, len(links))}...")
             
             driver.get(link)
             
@@ -51,10 +51,10 @@ def products_scraper(driver):
                 )
                 desc = desc_element.text
             except:
-                desc = "Descrição não encontrada"
+                desc = "Description not found"
             
-            print(f"Link: {link}\nDescrição: {desc}\n{'='*50}")
+            print(f"Link: {link}\nDescription: {desc}\n{'='*50}")
             
         except Exception as e:
-            print(f"Erro ao processar o link {link}: {e}")
+            print(f"Error processing link {link}: {e}")
             continue

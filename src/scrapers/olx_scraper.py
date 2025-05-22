@@ -5,7 +5,7 @@ from config import BASE_URL
 import time
 
 def get_page(driver):
-    """Navega para a página inicial e espera carregar"""
+    """Navigate to the initial page and wait for it to load"""
     driver.get(BASE_URL)
     
     try:
@@ -13,19 +13,19 @@ def get_page(driver):
             EC.presence_of_element_located((By.CSS_SELECTOR, ".olx-link.olx-link--caption.olx-link--main"))
         )
     except Exception as e:
-        print(f"Erro ao carregar a página: {e}")
+        print(f"Error loading the page: {e}")
         raise
     
     return driver
 
 def next_page(driver, index):
-    """Navega para a próxima página de resultados"""
+    """Navigate to the next results page"""
     driver.get(f"{BASE_URL}?o={index}")
     time.sleep(2)
 
 def is_last_page(driver):
-    """Verifica se é a última página de resultados"""
+    """Check if it is the last results page"""
     try:
-        return "Nenhum anúncio foi encontrado" in driver.page_source
+        return "No listings found" in driver.page_source
     except:
         return False
