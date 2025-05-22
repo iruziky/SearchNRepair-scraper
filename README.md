@@ -59,6 +59,6 @@ scraper-olx/
 │   ├── parsers/             # Functions to extract and clean data from HTML
 │   ├── storage/             # Persistence layer: save to CSV, JSON, DB, etc.
 │   ├── utils/               # Helper functions: user-agent, delays, proxies
-│   ├── models/              # Data structure representation (POPOs or dataclasses)
+│   └── models/              # Data structure representation (POPOs or dataclasses)
 ├── tests/                   # Tests using pytest
 │   └── test_scraper.py      # Unit tests for the scraper
