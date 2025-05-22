@@ -7,7 +7,7 @@ def get_page(p):
     page = context.new_page()
     page.goto(BASE_URL)
     page.wait_for_selector(".olx-link.olx-link--caption.olx-link--main", timeout=30000)
-    return browser, page
+    return page
 
 def next_page(page, index):
     page.goto(BASE_URL + "?o=" + str(index))
