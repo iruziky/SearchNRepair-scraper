@@ -1,12 +1,24 @@
 from scrapers.olx_scraper import get_page, next_page, is_last_page
+from storage.csv_writer import save_to_csv, save_product_data
 from parsers.olx_parser import extract_links 
-from storage.csv_writer import save_to_csv
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
+from parsers.product_parser import (
+    get_title,
+    get_price,
+    get_category,
+    get_brand,
+    get_model,
+    get_condition,
+    get_memory,
+    get_color,
+    get_battery_life,
+    get_description,
+    get_url_images,
+)
 
-def product_links_scraper(driver):
+import time
+import random
+
+def search_page_scraper(driver):
     """Collect all product links from listing pages"""
     driver = get_page(driver)
     index = 1
@@ -14,7 +26,10 @@ def product_links_scraper(driver):
     while True:
         try:
             links = extract_links(driver)
-            save_to_csv(links)
+
+            rows = [[link] for link in links]
+            save_to_csv(rows, "links.csv")
+
             print(f"Page {index} with {len(links)} links")
 
             if is_last_page(driver):
@@ -32,29 +47,34 @@ def product_links_scraper(driver):
 
 def products_scraper(driver):
     """Scrape details of individual products"""
-    links = open("links.csv").read()
-    links = links.split("\n")
+    with open("links.csv") as f:
+        links = [line.strip() for line in f if line.strip()]
     
     if not links:
         print("No links found for scraping.")
         return
+    
+    products_data = []
+    for i, link in enumerate(links, 1):
+        print(f"\nScraping product {i}/{len(links)}: {link}")
+        driver.get(link)
+        
+        product_data = {
+            "link": link,
+            "title": get_title(driver),
+            "price": get_price(driver),
+            "category": get_category(driver),
+            "brand": get_brand(driver),
+            "model": get_model(driver),
+            "condition": get_condition(driver),
+            "memory": get_memory(driver),
+            "color": get_color(driver),
+            "battery_life": get_battery_life(driver),
+            "description": get_description(driver),
+            "images": get_url_images(driver)
+        }
 
-    for i, link in enumerate(links[:5], 1):
-        try:
-            print(f"\nProcessing product {i}/{min(5, len(links))}...")
-            
-            driver.get(link)
-            
-            try:
-                desc_element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "div.sc-ifAKCX.kZqjtz"))
-                )
-                desc = desc_element.text
-            except:
-                desc = "Description not found"
-            
-            print(f"Link: {link}\nDescription: {desc}\n{'='*50}")
-            
-        except Exception as e:
-            print(f"Error processing link {link}: {e}")
-            continue
+        products_data.append(product_data)
+        save_product_data(products_data)
+
+        time.sleep(random.uniform(3, 6))

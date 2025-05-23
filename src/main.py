@@ -1,5 +1,5 @@
 import undetected_chromedriver as uc
-from controllers.scraper_controller import product_links_scraper, products_scraper
+from controllers.scraper_controller import search_page_scraper, products_scraper
 
 def main():
     options = uc.ChromeOptions()
@@ -8,8 +8,8 @@ def main():
     driver = uc.Chrome(options=options)
     
     try:
-        product_links_scraper(driver)
-        #products_scraper(driver)
+        #search_page_scraper(driver)
+        products_scraper(driver)
     finally:
         driver.quit()
 
