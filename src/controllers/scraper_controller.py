@@ -75,7 +75,7 @@ def products_scraper(driver):
             "images": get_url_images(driver)
         }
 
-        url = "http://localhost:8080/smartphones/save"
+        url = "https://olx-back-end.onrender.com/smartphones/save"
 
         response = requests.post(url, json=product_data)
 
