@@ -5,7 +5,7 @@ STATE = "rio-grande-do-norte"
 STATE_ABBREVIATION = "rn"
 CITY = "natal"
 
-BASE_URL = f"https://www.olx.com.br/celulares/estado-{STATE_ABBREVIATION}/{STATE}/{CITY}/q=smartphone&sf=1"
+BASE_URL = f"https://www.olx.com.br/celulares/estado-{STATE_ABBREVIATION}/{STATE}/{CITY}/q=trincado&sf=1"
 
 # Selenium
 WAIT_TIMEOUT = 30

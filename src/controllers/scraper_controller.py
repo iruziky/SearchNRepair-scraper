@@ -22,7 +22,7 @@ import requests
 def search_page_scraper(driver):
     """Collect all product links from listing pages"""
     driver = get_page(driver)
-    index = 1
+    index = 100
 
     while True:
         try:
