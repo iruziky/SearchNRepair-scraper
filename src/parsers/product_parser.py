@@ -4,12 +4,15 @@ from selenium.webdriver.support import expected_conditions as EC
 
 def get_url_images(driver):
     """Returns list with URLs of carousel images"""
+    response = ""
     try:
         carousel_div = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".ad__sc-xbkr7e-1"))
         )
         images = carousel_div.find_elements(By.TAG_NAME, "img")
-        return [img.get_attribute("src") for img in images]
+        for img in images:
+            response = response + img.get_attribute("src") + ";"
+        return response
     except Exception:
         return []
 

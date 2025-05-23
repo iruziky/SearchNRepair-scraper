@@ -1,5 +1,5 @@
 from scrapers.olx_scraper import get_page, next_page, is_last_page
-from storage.csv_writer import save_to_csv, save_product_data
+from storage.csv_writer import save_to_csv
 from parsers.olx_parser import extract_links 
 from parsers.product_parser import (
     get_title,
@@ -17,6 +17,7 @@ from parsers.product_parser import (
 
 import time
 import random
+import requests
 
 def search_page_scraper(driver):
     """Collect all product links from listing pages"""
@@ -69,12 +70,16 @@ def products_scraper(driver):
             "condition": get_condition(driver),
             "memory": get_memory(driver),
             "color": get_color(driver),
-            "battery_life": get_battery_life(driver),
+            "batteryLife": get_battery_life(driver),
             "description": get_description(driver),
             "images": get_url_images(driver)
         }
 
-        products_data.append(product_data)
-        save_product_data(products_data)
+        url = "http://localhost:8080/smartphones/save"
+
+        response = requests.post(url, json=product_data)
+
+        print("Status code:", response.status_code)
+        print("Response body:", response.text)
 
         time.sleep(random.uniform(3, 6))
