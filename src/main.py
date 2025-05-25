@@ -8,8 +8,8 @@ def main():
     driver = uc.Chrome(options=options)
     
     try:
-        #search_page_scraper(driver)
-        products_scraper(driver)
+        search_page_scraper(driver)
+        #products_scraper(driver)
     finally:
         driver.quit()
 

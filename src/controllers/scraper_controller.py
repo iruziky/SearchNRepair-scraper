@@ -1,4 +1,4 @@
-from scrapers.olx_scraper import get_page, next_page, is_last_page
+from navigation.page_navigation import PageNavigator
 from parsers.olx_parser import extract_links 
 from parsers.product_parser import *
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
@@ -10,37 +10,32 @@ import random
 from models.smartphone import Smartphone
 from utils.helpers import log
 from storage.api_client import save_smartphone
-
+from config import BASE_URL, EXPECTED_ELEMENT_SEARCH_PAGE
 
 def search_page_scraper(driver):
     """Collect all product links from listing pages"""
-    driver = get_page(driver)
-    index = 1
-
+    page = 3
+    navigator = PageNavigator(driver)
+    
     while True:
         try:
+            navigator.get_page(BASE_URL + str(page), EXPECTED_ELEMENT_SEARCH_PAGE)
             links = extract_links(driver)
-
-            rows = [[link] for link in links]
+            
+            if not links:
+                break
+            
+            # salvar no banco
+            #rows = [[link] for link in links]
             #save_to_csv(rows, "links.csv")
 
-            print(f"Page {index} with {len(links)} links")
-            
-            if is_last_page(driver):
-                print("Last page reached.")
-                break
-
-            index += 1
-            next_page(driver, index)
+            print(f"Page {page} with {len(links)} links")
 
             time.sleep(2)
-            break
+            page += 1
 
         except Exception as e:
             print(f"Error during links scraping: {e}")
-            break
-
-
 
 def products_scraper(driver):
     """Scrape details of individual products"""
