@@ -1,122 +1,68 @@
 from navigation.page_navigation import PageNavigator
-from parsers.olx_parser import extract_links 
-from parsers.product_parser import *
-from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
+from scrapers.smartphone_scraper import SmartphoneScraper
+from scrapers.links_scraper import extract_links 
+from parsers.smartphone_parser import build_smartphone
+from utils.helpers import log, wait
+from api.smartphones import save_smartphone
+from api.links import save_links, list_all
+from parsers.links_parser import validate_links
 import time
 import random
-from models.smartphone import Smartphone
-from utils.helpers import log
-from storage.api_client import save_smartphone
 from config import BASE_URL, EXPECTED_ELEMENT_SEARCH_PAGE
+
 
 def search_page_scraper(driver):
     """Collect all product links from listing pages"""
-    page = 3
     navigator = PageNavigator(driver)
-    
+    page = 1
+
     while True:
         try:
             navigator.get_page(BASE_URL + str(page), EXPECTED_ELEMENT_SEARCH_PAGE)
+
             links = extract_links(driver)
-            
             if not links:
                 break
-            
-            # salvar no banco
-            #rows = [[link] for link in links]
-            #save_to_csv(rows, "links.csv")
 
-            print(f"Page {page} with {len(links)} links")
+            valid_links = validate_links(links)
+            if valid_links:
+                save_links(valid_links)
+                print(f"Page {page} with {len(valid_links)} valid links")
 
-            time.sleep(2)
+            if not valid_links or len(valid_links) < 50:
+                break
+
+            time.sleep(15)
             page += 1
 
         except Exception as e:
             print(f"Error during links scraping: {e}")
 
-def products_scraper(driver):
+
+def smartphone_page_scraper(driver):
     """Scrape details of individual products"""
-    contador = 0
 
-    while True:
-        with open("links.csv") as f:
-            links = [line.strip() for line in f if line.strip()]
-        
-        if not links:
-            log("No links found for scraping.")
-            break
+    scraping_links = list_all()
+    if not scraping_links:
+        log("Nenhum link para scrapear.")
+        return
 
-        link = links[0]
-        contador += 1
+    for contador, scraping_link in enumerate(scraping_links, start=1):
+        url = scraping_link["url"]
 
-        if contador == 15:
-            delay = 600
-            log("Aguardando 10 minutos para evitar bloqueio...")
-            time.sleep(delay)
-            log("Tempo de espera concluído!")
-            contador = 0
+        log(f"Scraping product {contador}/{len(scraping_links)}: {url}")
 
-        log(f"Scraping product {1}/{len(links)}: {link}")
+        smartphone_scraper = SmartphoneScraper(driver)
+        smartphone_scraper.get_ad_page(url)
+        smartphone_scraper.is_valid_page()
+        data = smartphone_scraper.get_elements()
 
-        try:
-            driver.set_page_load_timeout(60)
-            driver.get(link)
+        smartphone = build_smartphone(data)
 
-            WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
-
-            try:
-                error_element = driver.find_element(By.CSS_SELECTOR, "div.ad__sc-ka1npw-2:nth-child(2) > span:nth-child(1)")
-                if "não foi encontrada" in error_element.text.lower():
-                    log("Página não encontrada. Removendo link da lista...")
-                    links.pop(0)
-                    with open("links.csv", "w") as f:
-                        f.writelines(f"{l}\n" for l in links)
-                    continue
-            except NoSuchElementException:
-                pass
-
-        except TimeoutException:
-            log(f"Timeout ao carregar {link}, pulando...")
-            links.pop(0)
-            with open("links.csv", "w") as f:
-                f.writelines(f"{l}\n" for l in links)
-            continue
-
-        except WebDriverException as e:
-            log(f"WebDriverException em {link}: {e}")
-            try:
-                driver.quit()
-            except:
-                pass
-            continue
-
-        smartphone = Smartphone(
-            link=link,
-            title=get_title(driver),
-            price=get_price(driver),
-            category=get_category(driver),
-            brand=get_brand(driver),
-            model=get_model(driver),
-            condition=get_condition(driver),
-            memory=get_memory(driver),
-            color=get_color(driver),
-            batteryLife=get_battery_life(driver),
-            description=get_description(driver),
-            images=get_url_images(driver),
-            isBreak=False
-        )
-            
         save_smartphone(smartphone)
 
-        links.pop(0)
-        with open("links.csv", "w") as f:
-            f.writelines(f"{l}\n" for l in links)
-
-        delay = random.uniform(10, 15)
-        log(f"Aguardando {delay:.2f} segundos antes de continuar...")
-        time.sleep(delay)
+        if contador % 15 == 0:
+            wait(600)
+            log("Tempo de espera concluído!")
+        else:
+            wait(random.uniform(10, 15))
